@@ -52,10 +52,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/decodo/langchain-tools.git"
-  },
-  "bugs": {
-    "url": "https://github.com/decodo/langchain-tools/issues"
-  },
-  "homepage": "https://github.com/decodo/langchain-tools#readme"
+    "url": "https://github.com/Decodo/decodo-langchain-ts.git"
+  }
 }

@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+npm-debug.log*
+dist/
+
+.env
+
+.vscode/
+.idea/
+
+.DS_Store
+.npm
+.eslintcache

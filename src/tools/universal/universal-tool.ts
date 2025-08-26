@@ -13,6 +13,8 @@ export class DecodoUniversalTool extends DecodoBaseTool {
   }
 
   async _call(params: InputType): Promise<ScraperApiResponse> {
-    return this.callBase(params);
+    const universalParams = { ...params, markdown: true, parse: false };
+
+    return this.callBase(universalParams);
   }
 }

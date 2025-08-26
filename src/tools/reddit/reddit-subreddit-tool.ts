@@ -1,10 +1,10 @@
-import { ScraperApiResponse } from '@decodo/sdk-ts';
+import { ScraperApiResponse, TARGET } from '@decodo/sdk-ts';
 
 import { DecodoConfig } from '../../types';
-import { InputType } from '../../schema';
+import { SubredditInputType } from './schema';
 import { DecodoBaseTool } from '../decodo-base-tool';
 
-export class DecodoRedditTool extends DecodoBaseTool {
+export class DecodoRedditSubredditTool extends DecodoBaseTool {
   public name = 'decodo_reddit_subreddit';
 
   public description = "Scrape Reddit posts and subreddits using Decodo's API";
@@ -13,8 +13,8 @@ export class DecodoRedditTool extends DecodoBaseTool {
     super(config);
   }
 
-  async _call(params: InputType): Promise<ScraperApiResponse> {
-    const toolParams = { ...params, target: 'reddit_subreddit' };
+  async _call(params: SubredditInputType): Promise<ScraperApiResponse> {
+    const toolParams = { ...params, target: TARGET.REDDIT_SUBREDDIT, parse: false };
 
     return this.callBase(toolParams);
   }

@@ -41,6 +41,9 @@ export class DecodoBaseTool extends StructuredTool<InputSchemaZodType> {
 
       const response = await this.client.request<ScraperApiResponse>({
         method: 'POST',
+        headers: {
+          'x-integration': 'langchain',
+        },
         data: {
           ...(target && { target }),
           ...(url && { url }),

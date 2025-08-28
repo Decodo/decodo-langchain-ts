@@ -19,7 +19,7 @@ npm install @decodo/langchain-ts
 
 ## Quick Start
 
-To use the tools in this project, you will need a Decodo Advanced Web Scraping API subscription. Free trials are available on the [dashboard](https://dashboard.decodo.com/).
+To use the tools in this project, you will need a [Decodo Advanced Web Scraping API](https://help.decodo.com/docs/web-scraping-api-core-and-advanced-plans) subscription. Free trials are available on the [dashboard](https://dashboard.decodo.com/).
 
 Once you have a plan activated, take a note of your generated username and password:
 

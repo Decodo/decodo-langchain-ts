@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/Decodo/decodo-langchain-ts/compare/v1.0.0...v1.1.0) (2025-08-27)
+
+
+### Features
+
+* add integration header ([#6](https://github.com/Decodo/decodo-langchain-ts/issues/6)) ([862f83f](https://github.com/Decodo/decodo-langchain-ts/commit/862f83f9a09bf93d12f366efc6209888cc82499b))
+
 # 1.0.0 (2025-08-25)
 
 

@@ -29,6 +29,18 @@ export class DecodoBaseTool extends StructuredTool<InputSchemaZodType> {
     });
   }
 
+  paramsTransform = ({ target, url, query, parse, geo, jsRender, markdown }: InputType) => {
+    return {
+      ...(target && { target }),
+      ...(url && { url }),
+      ...(query && { query }),
+      ...(parse && { parse }),
+      ...(geo && { geo }),
+      ...(jsRender && { headless: 'html' }),
+      ...(markdown && { markdown }),
+    };
+  };
+
   async _call(_input: InputType): Promise<ScraperApiResponse> {
     throw new Error(
       `_call cannot be called from DecodoBaseTool. Use one of the tool classes extending DecodoBaseTool instead.`
@@ -37,10 +49,11 @@ export class DecodoBaseTool extends StructuredTool<InputSchemaZodType> {
 
   async callBase(input: InputType): Promise<ScraperApiResponse> {
     try {
-      const { target, url, query, geo } = input;
+      const data = this.paramsTransform(input);
 
       const response = await this.client.request<ScraperApiResponse>({
         method: 'POST',
+        data,
         headers: {
           'x-integration': 'langchain',
         },

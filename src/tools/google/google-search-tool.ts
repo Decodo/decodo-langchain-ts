@@ -1,8 +1,8 @@
-import { ScraperApiResponse } from '@decodo/sdk-ts';
+import { ScraperApiResponse, TARGET } from '@decodo/sdk-ts';
 
 import { DecodoConfig } from '../../types';
 import { DecodoBaseTool } from '../decodo-base-tool';
-import { InputType } from '../../schema';
+import { GoogleSearchInputType } from './schema';
 
 export class DecodoGoogleSearchTool extends DecodoBaseTool {
   public name = 'decodo_google_search';
@@ -13,8 +13,8 @@ export class DecodoGoogleSearchTool extends DecodoBaseTool {
     super(config);
   }
 
-  async _call(params: InputType): Promise<ScraperApiResponse> {
-    const toolParams = { ...params, target: 'google_search' };
+  async _call(params: GoogleSearchInputType): Promise<ScraperApiResponse> {
+    const toolParams = { ...params, target: TARGET.GOOGLE_SEARCH, parse: true, jsRender: false };
 
     return this.callBase(toolParams);
   }

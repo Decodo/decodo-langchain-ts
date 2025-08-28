@@ -4,7 +4,7 @@ A Node.js LangChain plugin that enables developers to use Decodo's Scraper API a
 
 ## Features
 
-- **Web Scraping**: Scrape any URL and retrieve HTML content
+- **Web Scraping**: Scrape any URL and retrieve Markdown content
 - **Google Search**: Search Google and retrieve structured results
 - **Amazon Search**: Search Amazon and retrieve structured product data
 - **Reddit Scraping**: Scrape Reddit posts and subreddits
@@ -28,16 +28,43 @@ Once you have a plan activated, take a note of your generated username and passw
 A simple agentic example:
 
 ```typescript
+import dotenv from 'dotenv';
+import { ChatOpenAI } from '@langchain/openai';
+import { createReactAgent } from '@langchain/langgraph/prebuilt';
 import { DecodoUniversalTool } from '@decodo/langchain-ts';
 
-const scraperTool = new DecodoUniversalTool({
-  username: 'web-advances-username',
-  password: 'web-advances-password',
-});
+dotenv.config();
 
-const agent = new Agent({
-  tools: [scraperTool],
-});
+const main = async () => {
+  const username = process.env.SCRAPER_API_USERNAME!;
+  const password = process.env.SCRAPER_API_PASSWORD!;
+
+  const decodoUniversalTool = new DecodoUniversalTool({ username, password });
+
+  const model = new ChatOpenAI({
+    model: 'gpt-4o-mini',
+  });
+
+  const agent = createReactAgent({
+    llm: model,
+    tools: [decodoUniversalTool],
+  });
+
+  const result = await agent.invoke({
+    messages: [
+      {
+        role: 'user',
+        content: 'scrape the wikipedia NBA 2025 season page and tell me who won in 2025?',
+      },
+    ],
+  });
+
+  console.log(result.messages[result.messages.length - 1].content);
+};
+
+if (require.main === module) {
+  main();
+}
 ```
 
 ## Available Tools
@@ -46,7 +73,7 @@ See the `tools/` directory for a list of available tools.
 
 ## Examples
 
-See the `exmaples/` to see tools in action.
+See the `examples/` directory to see tools in action.
 
 ## Configuration
 

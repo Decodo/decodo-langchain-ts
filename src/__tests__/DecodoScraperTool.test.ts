@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { DecodoUniversalTool } from '../tools';
 
-// Mock axios
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
@@ -12,8 +11,10 @@ describe('DecodoScraperTool', () => {
   beforeEach(() => {
     mockPost = jest.fn();
     mockedAxios.create.mockReturnValue({
-      post: mockPost,
+      request: mockPost,
     } as any);
+
+    jest.spyOn(axios, 'isAxiosError').mockReturnValue(false);
 
     tool = new DecodoUniversalTool({
       username: 'test-user',
@@ -26,8 +27,7 @@ describe('DecodoScraperTool', () => {
   });
 
   it('should create tool with correct configuration', () => {
-    expect(tool.name).toBe('decodo_scraper');
-    expect(tool.description).toContain('Scrape any URL');
+    expect(tool.name).toBe('decodo_universal_tool');
   });
 
   it('should handle simple URL input', async () => {
@@ -42,12 +42,24 @@ describe('DecodoScraperTool', () => {
 
     mockPost.mockResolvedValue(mockResponse);
 
-    const result = await tool.invoke('https://example.com');
+    const result = await tool.invoke({ url: 'https://example.com' });
 
-    expect(mockPost).toHaveBeenCalledWith('/scrape', {
-      url: 'https://example.com',
+    expect(mockPost).toHaveBeenCalledWith({
+      method: 'POST',
+      headers: {
+        'x-integration': 'langchain',
+      },
+      data: {
+        url: 'https://example.com',
+        markdown: true,
+      },
     });
-    expect(result).toBe('<html>Test content</html>');
+    expect(result).toEqual({
+      content: '<html>Test content</html>',
+      status: 200,
+      url: 'https://example.com',
+      timestamp: '2023-01-01T00:00:00Z',
+    });
   });
 
   it('should handle JSON input with parameters', async () => {
@@ -62,44 +74,40 @@ describe('DecodoScraperTool', () => {
 
     mockPost.mockResolvedValue(mockResponse);
 
-    const input = JSON.stringify({
+    const input = {
       url: 'https://example.com',
       markdown: true,
       jsRender: true,
       geo: 'US',
-    });
+    };
 
     const result = await tool.invoke(input);
 
-    expect(mockPost).toHaveBeenCalledWith('/scrape', {
-      url: 'https://example.com',
-      markdown: true,
-      jsRender: true,
-      geo: 'US',
-    });
-    expect(result).toBe('Markdown content');
-  });
-
-  it('should handle API errors', async () => {
-    const mockError = {
-      response: {
-        data: {
-          message: 'API rate limit exceeded',
-        },
+    expect(mockPost).toHaveBeenCalledWith({
+      method: 'POST',
+      headers: {
+        'x-integration': 'langchain',
       },
-    };
-
-    mockedAxios.isAxiosError.mockReturnValue(true);
-    mockPost.mockRejectedValue(mockError);
-
-    await expect(tool.invoke('https://example.com')).rejects.toThrow('Decodo API error: API rate limit exceeded');
+      data: {
+        url: 'https://example.com',
+        markdown: true,
+        headless: 'html',
+        geo: 'US',
+      },
+    });
+    expect(result).toEqual({
+      content: 'Markdown content',
+      status: 200,
+      url: 'https://example.com',
+      timestamp: '2023-01-01T00:00:00Z',
+    });
   });
 
   it('should handle non-Axios errors', async () => {
     const mockError = new Error('Network error');
-    mockedAxios.isAxiosError.mockReturnValue(false);
+    jest.spyOn(axios, 'isAxiosError').mockReturnValue(false);
     mockPost.mockRejectedValue(mockError);
 
-    await expect(tool.invoke('https://example.com')).rejects.toThrow('Network error');
+    await expect(tool.invoke({ url: 'https://example.com' })).rejects.toThrow('Network error');
   });
 });

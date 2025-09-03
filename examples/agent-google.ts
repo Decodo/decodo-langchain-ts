@@ -20,7 +20,7 @@ const main = async () => {
     tools: [decodoGoogleSearchTool],
   });
 
-  const prompt = 'which mobile service provider appears first on Google in Germany?';
+  const prompt = 'what appears first on Google search for "pizza place in Berlin"?';
 
   console.log(prompt);
 

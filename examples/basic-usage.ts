@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { DecodoUniversalTool, DecodoGoogleSearchTool, DecodoAmazonSearchTool, DecodoRedditTool } from '../src';
+import { DecodoUniversalTool, DecodoGoogleSearchTool, DecodoAmazonSearchTool, DecodoRedditSubredditTool } from '../src';
 
 dotenv.config();
 
@@ -22,7 +22,7 @@ async function main() {
     password,
   });
 
-  const redditTool = new DecodoRedditTool({
+  const redditTool = new DecodoRedditSubredditTool({
     username,
     password,
   });

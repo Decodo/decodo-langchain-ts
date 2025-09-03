@@ -57,12 +57,6 @@ export class DecodoBaseTool extends StructuredTool<InputSchemaZodType> {
         headers: {
           'x-integration': 'langchain',
         },
-        data: {
-          ...(target && { target }),
-          ...(url && { url }),
-          ...(query && { query }),
-          ...(geo && { geo }),
-        },
       });
 
       return response.data;

@@ -1,3 +1,15 @@
+# [1.2.0](https://github.com/Decodo/decodo-langchain-ts/compare/v1.1.0...v1.2.0) (2025-09-03)
+
+
+### Bug Fixes
+
+* test, add github PR workflow ([#7](https://github.com/Decodo/decodo-langchain-ts/issues/7)) ([6c61b5b](https://github.com/Decodo/decodo-langchain-ts/commit/6c61b5bcc53d8b4ec0b823c564cec05d049b9e7e))
+
+
+### Features
+
+* add examples ([#5](https://github.com/Decodo/decodo-langchain-ts/issues/5)) ([c2006c0](https://github.com/Decodo/decodo-langchain-ts/commit/c2006c0c3fada2a071fdd52e8e92337a269cf5c4))
+
 # [1.1.0](https://github.com/Decodo/decodo-langchain-ts/compare/v1.0.0...v1.1.0) (2025-08-27)
 
 

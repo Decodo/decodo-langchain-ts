@@ -1,9 +1,9 @@
-import axios, { AxiosInstance } from 'axios';
 import { StructuredTool } from '@langchain/core/tools';
-
+import { DecodoClient, DecodoError, Target } from '@decodo/sdk-ts';
+import type { ScrapeRequest, SyncResponse, WebScrapingApi } from '@decodo/sdk-ts';
 import { inputSchema, InputSchemaZodType, InputType } from '../schema';
-import { DecodoConfig, ScraperApiResponse } from '../types';
-import { SCRAPER_API_ENDPOINT_SYNC } from '../constants';
+import { DecodoConfig } from '../types';
+import { INTEGRATION_HEADER } from '../constants';
 
 export class DecodoBaseTool extends StructuredTool<InputSchemaZodType> {
   public name = 'decodo_tool';
@@ -12,58 +12,45 @@ export class DecodoBaseTool extends StructuredTool<InputSchemaZodType> {
 
   public schema = inputSchema;
 
-  protected client: AxiosInstance;
+  protected client: WebScrapingApi;
 
   constructor({ username, password }: DecodoConfig) {
     super();
 
-    this.client = axios.create({
-      baseURL: SCRAPER_API_ENDPOINT_SYNC,
-      auth: {
-        username,
-        password,
-      },
-      headers: {
-        'Content-Type': 'application/json',
+    const { webScrapingApi } = new DecodoClient({
+      webScrapingApi: {
+        token: Buffer.from(`${username}:${password}`).toString('base64'),
+        integrationHeader: INTEGRATION_HEADER,
       },
     });
+
+    this.client = webScrapingApi;
   }
 
-  paramsTransform = ({ target, url, query, parse, geo, jsRender, markdown }: InputType) => {
+  paramsTransform = ({ target, url, query, parse, geo, jsRender, markdown }: InputType): ScrapeRequest => {
     return {
-      ...(target && { target }),
+      target: target ?? Target.Universal,
       ...(url && { url }),
       ...(query && { query }),
       ...(parse && { parse }),
       ...(geo && { geo }),
       ...(jsRender && { headless: 'html' }),
       ...(markdown && { markdown }),
-    };
+    } as ScrapeRequest;
   };
 
-  async _call(_input: InputType): Promise<ScraperApiResponse> {
+  async _call(_input: InputType): Promise<SyncResponse> {
     throw new Error(
       `_call cannot be called from DecodoBaseTool. Use one of the tool classes extending DecodoBaseTool instead.`
     );
   }
 
-  async callBase(input: InputType): Promise<ScraperApiResponse> {
+  async callBase(input: InputType): Promise<SyncResponse> {
     try {
-      const data = this.paramsTransform(input);
-
-      const response = await this.client.request<ScraperApiResponse>({
-        method: 'POST',
-        data,
-        headers: {
-          'x-integration': 'langchain',
-        },
-      });
-
-      return response.data;
+      return await this.client.scrape(this.paramsTransform(input));
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error(error?.response?.data);
-        throw new Error(`Decodo API error: ${JSON.stringify(error.response?.data)}`);
+      if (error instanceof DecodoError) {
+        throw new Error(`Decodo API error: ${error.message}`);
       }
       throw error;
     }

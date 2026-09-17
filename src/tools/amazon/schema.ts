@@ -1,8 +1,9 @@
 import z from 'zod';
+import { Target } from '@decodo/sdk-ts';
 import { inputSchema } from '../../schema';
 
 export const amazonSearchInputSchema = inputSchema.extend({
-  target: z.literal('amazon_search'),
+  target: z.literal(Target.AmazonSearch),
   query: z.string(),
   url: z.never(),
 });

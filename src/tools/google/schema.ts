@@ -1,8 +1,9 @@
 import z from 'zod';
+import { Target } from '@decodo/sdk-ts';
 import { inputSchema } from '../../schema';
 
 export const googleSearchInputSchema = inputSchema.extend({
-  target: z.literal('google_search'),
+  target: z.literal(Target.GoogleSearch),
   query: z.string(),
   url: z.never(),
 });

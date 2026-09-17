@@ -1,4 +1,6 @@
-import { DecodoConfig, ScraperApiResponse } from '../../types';
+import { Target } from '@decodo/sdk-ts';
+import type { SyncResponse } from '@decodo/sdk-ts';
+import { DecodoConfig } from '../../types';
 import { InputType } from '../../schema';
 import { DecodoBaseTool } from '../decodo-base-tool';
 
@@ -11,8 +13,8 @@ export class DecodoUniversalTool extends DecodoBaseTool {
     super(config);
   }
 
-  async _call(params: InputType): Promise<ScraperApiResponse> {
-    const universalParams = { ...params, markdown: true, parse: false };
+  async _call(params: InputType): Promise<SyncResponse> {
+    const universalParams = { ...params, target: params.target ?? Target.Universal, markdown: true, parse: false };
 
     return this.callBase(universalParams);
   }

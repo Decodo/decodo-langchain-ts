@@ -1,4 +1,6 @@
-import { DecodoConfig, ScraperApiResponse } from '../../types';
+import { Target } from '@decodo/sdk-ts';
+import type { SyncResponse } from '@decodo/sdk-ts';
+import { DecodoConfig } from '../../types';
 import { DecodoBaseTool } from '../decodo-base-tool';
 import { AmazonSearchInputType } from './schema';
 
@@ -11,8 +13,8 @@ export class DecodoAmazonSearchTool extends DecodoBaseTool {
     super(config);
   }
 
-  async _call(params: AmazonSearchInputType): Promise<ScraperApiResponse> {
-    const toolParams = { ...params, target: 'amazon_search', parse: true, jsRender: false };
+  async _call(params: AmazonSearchInputType): Promise<SyncResponse> {
+    const toolParams = { ...params, target: Target.AmazonSearch, parse: true, jsRender: false };
 
     return this.callBase(toolParams);
   }

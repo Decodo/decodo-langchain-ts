@@ -1,21 +1,23 @@
-import axios from 'axios';
+import { DecodoClient, DecodoError, Target } from '@decodo/sdk-ts';
 import { DecodoUniversalTool } from '../tools';
 
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockScrape = jest.fn();
+
+jest.mock('@decodo/sdk-ts', () => {
+  const actual = jest.requireActual('@decodo/sdk-ts');
+
+  return {
+    ...actual,
+    DecodoClient: jest.fn().mockImplementation(() => ({
+      webScrapingApi: { scrape: mockScrape },
+    })),
+  };
+});
 
 describe('DecodoScraperTool', () => {
   let tool: DecodoUniversalTool;
-  let mockPost: jest.Mock;
 
   beforeEach(() => {
-    mockPost = jest.fn();
-    mockedAxios.create.mockReturnValue({
-      request: mockPost,
-    } as any);
-
-    jest.spyOn(axios, 'isAxiosError').mockReturnValue(false);
-
     tool = new DecodoUniversalTool({
       username: 'test-user',
       password: 'test-pass',
@@ -30,49 +32,56 @@ describe('DecodoScraperTool', () => {
     expect(tool.name).toBe('decodo_universal_tool');
   });
 
+  it('should authenticate with a basic auth token and the langchain integration header', () => {
+    expect(DecodoClient).toHaveBeenCalledWith({
+      webScrapingApi: {
+        token: Buffer.from('test-user:test-pass').toString('base64'),
+        integrationHeader: 'langchain',
+      },
+    });
+  });
+
   it('should handle simple URL input', async () => {
     const mockResponse = {
-      data: {
-        content: '<html>Test content</html>',
-        status: 200,
-        url: 'https://example.com',
-        timestamp: '2023-01-01T00:00:00Z',
-      },
+      results: [
+        {
+          content: '<html>Test content</html>',
+          status_code: 200,
+          url: 'https://example.com',
+          task_id: 'task-1',
+          created_at: '2023-01-01T00:00:00Z',
+          updated_at: '2023-01-01T00:00:00Z',
+        },
+      ],
     };
 
-    mockPost.mockResolvedValue(mockResponse);
+    mockScrape.mockResolvedValue(mockResponse);
 
     const result = await tool.invoke({ url: 'https://example.com' });
 
-    expect(mockPost).toHaveBeenCalledWith({
-      method: 'POST',
-      headers: {
-        'x-integration': 'langchain',
-      },
-      data: {
-        url: 'https://example.com',
-        markdown: true,
-      },
-    });
-    expect(result).toEqual({
-      content: '<html>Test content</html>',
-      status: 200,
+    expect(mockScrape).toHaveBeenCalledWith({
+      target: Target.Universal,
       url: 'https://example.com',
-      timestamp: '2023-01-01T00:00:00Z',
+      markdown: true,
     });
+    expect(result).toEqual(mockResponse);
   });
 
   it('should handle JSON input with parameters', async () => {
     const mockResponse = {
-      data: {
-        content: 'Markdown content',
-        status: 200,
-        url: 'https://example.com',
-        timestamp: '2023-01-01T00:00:00Z',
-      },
+      results: [
+        {
+          content: 'Markdown content',
+          status_code: 200,
+          url: 'https://example.com',
+          task_id: 'task-2',
+          created_at: '2023-01-01T00:00:00Z',
+          updated_at: '2023-01-01T00:00:00Z',
+        },
+      ],
     };
 
-    mockPost.mockResolvedValue(mockResponse);
+    mockScrape.mockResolvedValue(mockResponse);
 
     const input = {
       url: 'https://example.com',
@@ -83,30 +92,24 @@ describe('DecodoScraperTool', () => {
 
     const result = await tool.invoke(input);
 
-    expect(mockPost).toHaveBeenCalledWith({
-      method: 'POST',
-      headers: {
-        'x-integration': 'langchain',
-      },
-      data: {
-        url: 'https://example.com',
-        markdown: true,
-        headless: 'html',
-        geo: 'US',
-      },
-    });
-    expect(result).toEqual({
-      content: 'Markdown content',
-      status: 200,
+    expect(mockScrape).toHaveBeenCalledWith({
+      target: Target.Universal,
       url: 'https://example.com',
-      timestamp: '2023-01-01T00:00:00Z',
+      markdown: true,
+      headless: 'html',
+      geo: 'US',
     });
+    expect(result).toEqual(mockResponse);
   });
 
-  it('should handle non-Axios errors', async () => {
-    const mockError = new Error('Network error');
-    jest.spyOn(axios, 'isAxiosError').mockReturnValue(false);
-    mockPost.mockRejectedValue(mockError);
+  it('should wrap Decodo API errors', async () => {
+    mockScrape.mockRejectedValue(new DecodoError('Invalid request', 400, 'failed'));
+
+    await expect(tool.invoke({ url: 'https://example.com' })).rejects.toThrow('Decodo API error: Invalid request');
+  });
+
+  it('should rethrow non-Decodo errors', async () => {
+    mockScrape.mockRejectedValue(new Error('Network error'));
 
     await expect(tool.invoke({ url: 'https://example.com' })).rejects.toThrow('Network error');
   });

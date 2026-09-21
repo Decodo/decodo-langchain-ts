@@ -2,14 +2,12 @@ import dotenv from 'dotenv';
 import { ChatOpenAI } from '@langchain/openai';
 import { createReactAgent } from '@langchain/langgraph/prebuilt';
 import { DecodoGoogleSearchTool } from '../src';
+import { decodoConfigFromEnv } from './config';
 
 dotenv.config();
 
 const main = async () => {
-  const username = process.env.SCRAPER_API_USERNAME!;
-  const password = process.env.SCRAPER_API_PASSWORD!;
-
-  const decodoGoogleSearchTool = new DecodoGoogleSearchTool({ username, password });
+  const decodoGoogleSearchTool = new DecodoGoogleSearchTool(decodoConfigFromEnv());
 
   const model = new ChatOpenAI({
     model: 'gpt-5-mini',

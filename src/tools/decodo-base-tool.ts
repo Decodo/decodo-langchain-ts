@@ -3,6 +3,7 @@ import { DecodoClient, DecodoError, Target } from '@decodo/sdk-ts';
 import type { ScrapeRequest, SyncResponse, WebScrapingApi } from '@decodo/sdk-ts';
 import { inputSchema, InputSchemaZodType, InputType } from '../schema';
 import { DecodoConfig } from '../types';
+import { resolveCredentials } from '../auth';
 import { INTEGRATION_HEADER } from '../constants';
 
 export class DecodoBaseTool extends StructuredTool<InputSchemaZodType> {
@@ -14,12 +15,12 @@ export class DecodoBaseTool extends StructuredTool<InputSchemaZodType> {
 
   protected client: WebScrapingApi;
 
-  constructor({ username, password }: DecodoConfig) {
+  constructor(config: DecodoConfig) {
     super();
 
     const { webScrapingApi } = new DecodoClient({
       webScrapingApi: {
-        token: Buffer.from(`${username}:${password}`).toString('base64'),
+        ...resolveCredentials(config),
         integrationHeader: INTEGRATION_HEADER,
       },
     });

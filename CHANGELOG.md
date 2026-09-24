@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/Decodo/decodo-langchain-ts/compare/v1.2.1...v1.3.0) (2026-09-24)
+
+
+### Features
+
+* accept api key ([#26](https://github.com/Decodo/decodo-langchain-ts/issues/26)) ([dfad5c6](https://github.com/Decodo/decodo-langchain-ts/commit/dfad5c639fb3f2caa90045537efdde81dc656b47))
+
 ## [1.2.1](https://github.com/Decodo/decodo-langchain-ts/compare/v1.2.0...v1.2.1) (2026-09-24)
 
 

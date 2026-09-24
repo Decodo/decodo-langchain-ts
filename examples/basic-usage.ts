@@ -1,31 +1,19 @@
 import dotenv from 'dotenv';
 import { DecodoUniversalTool, DecodoGoogleSearchTool, DecodoAmazonSearchTool, DecodoRedditSubredditTool } from '../src';
+import { decodoConfigFromEnv } from './config';
 
 dotenv.config();
 
 async function main() {
-  const username = process.env.SCRAPER_API_USERNAME!;
-  const password = process.env.SCRAPER_API_PASSWORD!;
+  const config = decodoConfigFromEnv();
 
-  const scraperTool = new DecodoUniversalTool({
-    username,
-    password,
-  });
+  const scraperTool = new DecodoUniversalTool(config);
 
-  const googleSearchTool = new DecodoGoogleSearchTool({
-    username,
-    password,
-  });
+  const googleSearchTool = new DecodoGoogleSearchTool(config);
 
-  const amazonSearchTool = new DecodoAmazonSearchTool({
-    username,
-    password,
-  });
+  const amazonSearchTool = new DecodoAmazonSearchTool(config);
 
-  const redditTool = new DecodoRedditSubredditTool({
-    username,
-    password,
-  });
+  const redditTool = new DecodoRedditSubredditTool(config);
 
   try {
     console.log('Basic url scraping:');

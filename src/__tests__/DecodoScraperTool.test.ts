@@ -1,5 +1,6 @@
 import { DecodoClient, DecodoError, Target } from '@decodo/sdk-ts';
 import { DecodoUniversalTool } from '../tools';
+import { DecodoConfig } from '../types';
 
 const mockScrape = jest.fn();
 
@@ -39,6 +40,29 @@ describe('DecodoScraperTool', () => {
         integrationHeader: 'langchain',
       },
     });
+  });
+
+  it('should authenticate with an api key when one is given', () => {
+    new DecodoUniversalTool({ apiKey: 'test-api-key' });
+
+    expect(DecodoClient).toHaveBeenLastCalledWith({
+      webScrapingApi: {
+        apiKey: 'test-api-key',
+        integrationHeader: 'langchain',
+      },
+    });
+  });
+
+  it('should reject a config mixing an api key with a username and password', () => {
+    expect(
+      () => new DecodoUniversalTool({ apiKey: 'test-api-key', username: 'test-user' } as unknown as DecodoConfig)
+    ).toThrow('Decodo config accepts either apiKey or username and password, not both.');
+  });
+
+  it('should reject a config without any credentials', () => {
+    expect(() => new DecodoUniversalTool({} as unknown as DecodoConfig)).toThrow(
+      'Decodo config requires either an apiKey or both a username and a password.'
+    );
   });
 
   it('should handle simple URL input', async () => {

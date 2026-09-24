@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/Decodo/decodo-langchain-ts/compare/v1.2.0...v1.2.1) (2026-09-24)
+
+
+### Bug Fixes
+
+* reuse sdk ([#24](https://github.com/Decodo/decodo-langchain-ts/issues/24)) ([58f76d0](https://github.com/Decodo/decodo-langchain-ts/commit/58f76d07eb924f44dfe5696ffe6d4e4bb11c8a7d))
+
 # [1.2.0](https://github.com/Decodo/decodo-langchain-ts/compare/v1.1.0...v1.2.0) (2025-09-03)
 
 

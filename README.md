@@ -1,6 +1,6 @@
 # Decodo LangChain Tools
 
-A Node.js LangChain plugin that enables developers to use Decodo's Scraper API alongside their LangChain applications.
+A Node.js LangChain plugin that enables developers to use Decodo's Web Data API alongside their LangChain applications.
 
 ## Features
 
@@ -22,11 +22,11 @@ npm install @decodo/langchain-ts
 Prerequisites:
 
 - Node.js >= v20
-- Decodo Web Advanced subscription
+- Decodo Web Data API subscription
 
-To use the tools in this project, you will need a [Decodo Advanced Web Scraping API](https://help.decodo.com/docs/web-scraping-api-core-and-advanced-plans) subscription. Free trials are available on the [dashboard](https://dashboard.decodo.com/).
+To use the tools in this project, you will need a Decodo Web Data API subscription. Free trials are available on the [dashboard](https://dashboard.decodo.com/).
 
-Once you have a plan activated, take a note of either your API key or your generated username and password:
+Once you have a plan activated, copy your API key from the [Web Data API playground](https://dashboard.decodo.com/web-data/playground). Older plans only have a generated username and password, which also work:
 
 ![Decodo dashboard](img/auth.png 'Decodo dashboard')
 
@@ -38,7 +38,7 @@ cd decodo-langchain-ts
 npm i
 ```
 
-2. Copy `.env.example` to `.env` and fill in either `SCRAPER_API_KEY` or `SCRAPER_API_USERNAME` and `SCRAPER_API_PASSWORD`.
+2. Copy `.env.example` to `.env` and fill in `SCRAPER_API_KEY`. On an older plan, fill in `SCRAPER_API_USERNAME` and `SCRAPER_API_PASSWORD` instead.
 
 3. Run any of the sample agents:
 
@@ -58,12 +58,12 @@ See the `examples/` directory to see tools in action.
 
 ## Configuration
 
-All tools accept a `DecodoConfig` object holding either an API key or a username and password.
+All tools accept a `DecodoConfig` object holding either an API key (recommended) or, for older plans, a username and password. Passing both throws an error.
 
 ```typescript
 type DecodoConfig =
   | {
-      apiKey: string; // Your Web Advanced product API key
+      apiKey: string; // Your Web Data API key
     }
   | {
       username: string; // Your Web Advanced product username
@@ -74,7 +74,7 @@ type DecodoConfig =
 ```typescript
 const tool = new DecodoUniversalTool({ apiKey: process.env.SCRAPER_API_KEY! });
 
-// or
+// or, on an older plan
 
 const tool = new DecodoUniversalTool({
   username: process.env.SCRAPER_API_USERNAME!,

@@ -1,6 +1,7 @@
 import { DecodoClient, DecodoError, Target } from '@decodo/sdk-ts';
 import { DecodoUniversalTool } from '../tools';
 import { DecodoConfig } from '../types';
+import { INTEGRATION_HEADER } from '../constants';
 
 const mockScrape = jest.fn();
 
@@ -37,7 +38,7 @@ describe('DecodoScraperTool', () => {
     expect(DecodoClient).toHaveBeenCalledWith({
       webScrapingApi: {
         token: Buffer.from('test-user:test-pass').toString('base64'),
-        integrationHeader: 'langchain',
+        integrationHeader: INTEGRATION_HEADER,
       },
     });
   });
@@ -48,7 +49,7 @@ describe('DecodoScraperTool', () => {
     expect(DecodoClient).toHaveBeenLastCalledWith({
       webScrapingApi: {
         apiKey: 'test-api-key',
-        integrationHeader: 'langchain',
+        integrationHeader: INTEGRATION_HEADER,
       },
     });
   });

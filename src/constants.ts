@@ -1,1 +1,1 @@
-export const INTEGRATION_HEADER = 'langchain';
+export const INTEGRATION_HEADER = 'langchain-ts';

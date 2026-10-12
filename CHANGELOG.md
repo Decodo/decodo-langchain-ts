@@ -1,3 +1,10 @@
+## [1.3.2](https://github.com/Decodo/decodo-langchain-ts/compare/v1.3.1...v1.3.2) (2026-10-12)
+
+
+### Bug Fixes
+
+* update integration header ([#30](https://github.com/Decodo/decodo-langchain-ts/issues/30)) ([4e5da77](https://github.com/Decodo/decodo-langchain-ts/commit/4e5da7783b018055b4b5e0abaeed492d1d4dd1ee))
+
 ## [1.3.1](https://github.com/Decodo/decodo-langchain-ts/compare/v1.3.0...v1.3.1) (2026-10-09)
 
 

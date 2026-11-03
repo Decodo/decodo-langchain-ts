@@ -19,9 +19,8 @@ async function main() {
     console.log('Basic url scraping:');
     const basicResult = await scraperTool.invoke({
       url: 'https://example.com',
-      geo: 'US',
+      geo: 'United States',
       locale: 'en-US',
-      headless: 'html',
       markdown: true,
     });
     console.log(JSON.stringify(basicResult).length);
@@ -29,7 +28,7 @@ async function main() {
     console.log('Google Search:');
     const googleResults = await googleSearchTool.invoke({
       query: 'machine learning tutorials',
-      geo: 'US',
+      geo: 'United States',
       locale: 'en-US',
     });
     console.log(JSON.stringify(googleResults).length);
@@ -46,7 +45,7 @@ async function main() {
     });
     console.log(JSON.stringify(redditResults).length);
   } catch (error) {
-    console.error('Error:', error.message);
+    console.error('Error:', error instanceof Error ? error.message : error);
   }
 }
 

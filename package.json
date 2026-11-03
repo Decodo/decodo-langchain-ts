@@ -8,12 +8,14 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "example": "tsx examples/basic-usage",
+    "example:data-api": "tsx examples/data-api-usage",
     "example:agent-universal": "tsx examples/agent-universal",
     "example:agent-google": "tsx examples/agent-google",
     "example:agent-amazon": "tsx examples/agent-amazon",
+    "example:agent-web": "tsx examples/agent-web",
     "test": "jest",
-    "lint": "eslint src/**/*.ts",
-    "format": "prettier --write src/**/*.ts",
+    "lint": "eslint 'src/**/*.ts'",
+    "format": "prettier --write 'src/**/*.ts'",
     "prepack": "npm run build"
   },
   "keywords": [
@@ -26,8 +28,11 @@
   ],
   "author": "Decodo",
   "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
-    "@decodo/sdk-ts": "^2.3.0",
+    "@decodo/sdk-ts": "^3.0.0",
     "@langchain/core": "^0.3.0",
     "@langchain/openai": "^0.6.9",
     "dotenv": "^17.2.1",

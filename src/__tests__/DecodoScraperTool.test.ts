@@ -127,10 +127,14 @@ describe('DecodoScraperTool', () => {
     expect(result).toEqual(mockResponse);
   });
 
-  it('should wrap Decodo API errors', async () => {
-    mockScrape.mockRejectedValue(new DecodoError('Invalid request', 400, 'failed'));
+  it('should wrap Decodo API errors and keep the original as the cause', async () => {
+    const apiError = new DecodoError('Invalid request', 400, 'failed');
+    mockScrape.mockRejectedValue(apiError);
 
-    await expect(tool.invoke({ url: 'https://example.com' })).rejects.toThrow('Decodo API error: Invalid request');
+    await expect(tool.invoke({ url: 'https://example.com' })).rejects.toMatchObject({
+      message: 'Decodo API error: Invalid request',
+      cause: apiError,
+    });
   });
 
   it('should rethrow non-Decodo errors', async () => {

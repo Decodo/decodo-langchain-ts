@@ -1,10 +1,9 @@
 import { StructuredTool } from '@langchain/core/tools';
-import { DecodoClient, DecodoError, Target } from '@decodo/sdk-ts';
+import { Target } from '@decodo/sdk-ts';
 import type { ScrapeRequest, SyncResponse, WebScrapingApi } from '@decodo/sdk-ts';
 import { inputSchema, InputSchemaZodType, InputType } from '../schema';
 import { DecodoConfig } from '../types';
-import { resolveCredentials } from '../auth';
-import { INTEGRATION_HEADER } from '../constants';
+import { createWebScrapingApi, withDecodoErrors } from '../client';
 
 export class DecodoBaseTool extends StructuredTool<InputSchemaZodType> {
   public name = 'decodo_tool';
@@ -18,14 +17,7 @@ export class DecodoBaseTool extends StructuredTool<InputSchemaZodType> {
   constructor(config: DecodoConfig) {
     super();
 
-    const { webScrapingApi } = new DecodoClient({
-      webScrapingApi: {
-        ...resolveCredentials(config),
-        integrationHeader: INTEGRATION_HEADER,
-      },
-    });
-
-    this.client = webScrapingApi;
+    this.client = createWebScrapingApi(config);
   }
 
   paramsTransform = ({ target, url, query, parse, geo, jsRender, markdown }: InputType): ScrapeRequest => {
@@ -47,13 +39,6 @@ export class DecodoBaseTool extends StructuredTool<InputSchemaZodType> {
   }
 
   async callBase(input: InputType): Promise<SyncResponse> {
-    try {
-      return await this.client.scrape(this.paramsTransform(input));
-    } catch (error) {
-      if (error instanceof DecodoError) {
-        throw new Error(`Decodo API error: ${error.message}`);
-      }
-      throw error;
-    }
+    return withDecodoErrors(() => this.client.scrape(this.paramsTransform(input)));
   }
 }

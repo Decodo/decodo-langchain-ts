@@ -7,7 +7,6 @@ A Node.js LangChain plugin that enables developers to use Decodo's Web Data API 
 - **Web Scraping**: Scrape any URL and retrieve Markdown content
 - **Google Search**: Search Google and retrieve structured results
 - **Amazon Search**: Search Amazon and retrieve structured product data
-- **Reddit Scraping**: Scrape Reddit posts and subreddits
 - **Web Search**: Search the web and retrieve ranked results
 - **Site Mapping**: List the URLs on a website without fetching their content
 - **Crawling**: Crawl a website and retrieve the content of every page found
@@ -33,6 +32,27 @@ Once you have a plan activated, copy your API key from the [Web Data API playgro
 
 ![Decodo dashboard](img/auth.png 'Decodo dashboard')
 
+Give a tool to an agent:
+
+```typescript
+import { ChatOpenAI } from '@langchain/openai';
+import { createReactAgent } from '@langchain/langgraph/prebuilt';
+import { DecodoUniversalTool } from '@decodo/langchain-ts';
+
+const agent = createReactAgent({
+  llm: new ChatOpenAI({ model: 'gpt-5-mini' }),
+  tools: [new DecodoUniversalTool({ apiKey: process.env.SCRAPER_API_KEY! })],
+});
+
+const result = await agent.invoke({
+  messages: [{ role: 'user', content: 'Scrape example.com and summarise it.' }],
+});
+
+console.log(result.messages.at(-1)?.content);
+```
+
+### Running the samples in this repo
+
 1. Clone this repo and install dependencies:
 
 ```
@@ -46,7 +66,7 @@ npm i
 3. Run any of the samples:
 
 ```
-npm run example                  # scrape, Google, Amazon and Reddit tools without an agent
+npm run example                  # scrape, Google and Amazon tools without an agent
 npm run example:data-api         # search, map and crawl tools without an agent (API key only)
 npm run example:agent-universal
 npm run example:agent-google
@@ -61,7 +81,6 @@ npm run example:agent-web        # search, map and crawl in an agent (API key on
 | `DecodoUniversalTool`       | `decodo_universal_tool`   | Scrapes any URL and returns Markdown                                 |
 | `DecodoGoogleSearchTool`    | `decodo_google_search`    | Searches Google and returns structured results                       |
 | `DecodoAmazonSearchTool`    | `decodo_amazon_search`    | Searches Amazon and returns structured product data                  |
-| `DecodoRedditSubredditTool` | `decodo_reddit_subreddit` | Scrapes a subreddit                                                  |
 | `DecodoSearchTool`          | `decodo_search`           | Searches the web and returns ranked results                          |
 | `DecodoMapTool`             | `decodo_map`              | Lists the URLs on a website, 100 by default and up to 500            |
 | `DecodoCrawlTool`           | `decodo_crawl`            | Crawls a website and returns every page, 10 by default and up to 100 |
@@ -89,7 +108,7 @@ See the `examples/` directory to see tools in action.
 
 ## Configuration
 
-The scrape tools (`DecodoUniversalTool`, `DecodoGoogleSearchTool`, `DecodoAmazonSearchTool` and `DecodoRedditSubredditTool`) accept a `DecodoConfig` object holding either an API key (recommended) or, for older plans, a username and password. Passing both throws an error. The search, map and crawl tools accept only an API key.
+The scrape tools (`DecodoUniversalTool`, `DecodoGoogleSearchTool` and `DecodoAmazonSearchTool`) accept a `DecodoConfig` object holding either an API key (recommended) or, for older plans, a username and password. Passing both throws an error. The search, map and crawl tools accept only an API key.
 
 ```typescript
 type DecodoConfig =
@@ -117,7 +136,16 @@ const legacyTool = new DecodoUniversalTool({
 
 ## API Parameters
 
-See the [Scraper API documentation](https://help.decodo.com/docs/web-scraping-api-parameters) for a list of available parameters.
+The scrape tools (`DecodoUniversalTool`, `DecodoGoogleSearchTool` and `DecodoAmazonSearchTool`) take the parameters listed in the [Web Data API documentation](https://help.decodo.com/docs/web-scraping-api-parameters).
+
+`DecodoSearchTool`, `DecodoMapTool`, `DecodoCrawlTool` and `DecodoCrawlCancelTool` have their own schemas, documented on the [LangChain (TypeScript) integration page](https://help.decodo.com/docs/langchain) and defined in [`src/schema.ts`](src/schema.ts):
+
+| Tool | Parameters |
+| --- | --- |
+| `decodo_search` | `query`, `geo`, `locale`, `page` |
+| `decodo_map` | `url`, `sitemap`, `domainFilter`, `selectPaths`, `excludePaths`, `geo`, `locale`, `limit`, `jsRender` |
+| `decodo_crawl` | `url`, `sitemap`, `domainFilter`, `selectPaths`, `excludePaths`, `geo`, `locale`, `limit`, `maxDepth`, `output` |
+| `decodo_crawl_cancel` | `crawlId` |
 
 ## License
 
